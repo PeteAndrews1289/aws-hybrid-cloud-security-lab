@@ -41,3 +41,22 @@ This subnet will not have direct internet exposure, reducing attack surface.
 Created and attached an Internet Gateway to enable communication between the VPC and the public internet.
 
 This is required for public subnet resources to be accessible externally.
+
+
+## Public Route Table
+
+Configured route table with default route (0.0.0.0/0) pointing to Internet Gateway.
+
+Associated with public subnet to allow outbound and inbound internet traffic.
+
+
+## Private Route Table
+
+Configured route table without internet gateway route.
+
+This ensures private subnet resources remain isolated from direct internet access.
+
+
+## Public IP Assignment
+
+Enabled auto-assign public IPv4 for public subnet to allow instances to be reachable from the internet.
