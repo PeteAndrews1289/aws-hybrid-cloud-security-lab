@@ -34,3 +34,10 @@ Assigned to a single availability zone for simplicity in initial lab setup.
 Created private subnet (10.0.2.0/24) for internal resources.
 
 This subnet will not have direct internet exposure, reducing attack surface.
+
+
+## Internet Gateway
+
+Created and attached an Internet Gateway to enable communication between the VPC and the public internet.
+
+This is required for public subnet resources to be accessible externally.
