@@ -54,3 +54,27 @@ Screenshots included in this repository show:
 - Reviewed CloudTrail event history to observe infrastructure actions
 - Used CloudWatch to monitor EC2 metrics such as CPU and network activity
 - Established baseline system behavior prior to attack simulation
+
+
+## Security Gaps Identified
+
+- No visibility into failed SSH login attempts
+- No host-level logging configured
+- No centralized log aggregation (SIEM)
+- SSH exposed to the internet (even if restricted)
+
+### Risk
+
+An attacker could attempt repeated login attempts or exploit vulnerabilities without being detected by default AWS logging services.
+
+## Security Recommendations
+
+- Replace SSH with AWS Systems Manager Session Manager to eliminate public SSH exposure
+- Enable host-level logging (e.g., auth logs)
+- Integrate logs into a SIEM solution (e.g., Splunk)
+- Enable VPC Flow Logs for network visibility
+- Implement intrusion detection mechanisms for abnormal behavior
+
+## Key Takeaway
+
+This project demonstrates that cloud security is not just about restricting access, but also about ensuring sufficient visibility to detect and respond to malicious activity.
