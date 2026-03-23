@@ -48,3 +48,9 @@ Screenshots included in this repository show:
 - Confirmed the public web server was accessible over HTTP
 - Verified that the internal server was not directly exposed to the internet
 - Confirmed security group and route table behavior matched intended design
+
+## Monitoring and Logging
+- Enabled AWS CloudTrail to capture API activity across the environment
+- Reviewed CloudTrail event history to observe infrastructure actions
+- Used CloudWatch to monitor EC2 metrics such as CPU and network activity
+- Established baseline system behavior prior to attack simulation
