@@ -1,0 +1,46 @@
+## Nmap Scan Results
+
+Conducted an external reconnaissance scan using Nmap.
+
+### Findings
+- Port 22 (SSH) open — OpenSSH 8.7
+- Port 80 (HTTP) open — Apache httpd 2.4.66 (Amazon Linux)
+- 998 ports filtered (no response)
+
+### Interpretation
+The system exposes only required services. Security groups effectively block all other ports, reducing the attack surface.
+
+### Security Insight
+Service version detection reveals potential targets for vulnerability analysis, emphasizing the importance of patching and minimizing exposed services.
+
+## Unauthorized Access Simulation
+
+Performed multiple failed SSH login attempts.
+
+### Findings
+- Access attempts were denied
+- No unauthorized access was granted
+
+### CloudTrail Observation
+SSH login attempts were not recorded in CloudTrail.
+
+### Insight
+CloudTrail logs AWS API activity but does not capture OS-level authentication attempts, highlighting a visibility gap.
+
+## Attack Simulation Summary
+
+Simulated external reconnaissance and unauthorized access attempts against a public-facing EC2 instance.
+
+### Key Observations
+
+- Only intended services (SSH and HTTP) were exposed
+- Security groups effectively filtered all other ports
+- Unauthorized SSH access attempts were denied
+- CloudTrail did not capture OS-level login attempts
+- CloudWatch provided limited visibility into these events
+
+### Interpretation
+
+The infrastructure was properly secured at the network level, but lacked deep visibility into host-level activity.
+
+This demonstrates a common gap in cloud environments where infrastructure logging is enabled, but endpoint-level monitoring is not configured.
