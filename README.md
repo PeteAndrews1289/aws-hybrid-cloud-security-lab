@@ -103,3 +103,26 @@ Splunk provides centralized visibility into AWS API activity, enabling detection
 CloudTrail logs required custom parsing due to nested JSON structure, demonstrating the importance of understanding log formats during SIEM integration.
 
 CloudTrail does not capture OS-level activity, highlighting a key gap in cloud-native logging.
+
+
+## Dashboard Visualization
+
+## Process
+
+- Built a Splunk dashboard to monitor AWS CloudTrail logs
+- Created visual panels for API activity, EC2 events, failed actions, and time-based trends
+
+## Result
+
+Developed a SIEM-style dashboard that provides visibility into AWS service activity and potential security events.
+
+## Insight
+
+The dashboard enables quick identification of:
+
+- Most common AWS API actions
+- Infrastructure-related activity (EC2)
+- Failed API calls
+- Service activity trends over time
+
+This demonstrates how raw CloudTrail logs can be converted into meaningful security visualizations using Splunk.
