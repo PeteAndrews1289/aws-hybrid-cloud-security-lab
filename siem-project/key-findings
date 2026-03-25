@@ -1,0 +1,69 @@
+# Key Findings
+
+## Finding 1
+
+AWS CloudTrail logs were successfully ingested into Splunk Enterprise for centralized analysis.
+
+---
+
+## Finding 2
+
+CloudTrail logs required additional parsing due to the `Records` array structure.
+
+Using `spath` and `mvexpand` enabled individual AWS events to be analyzed within Splunk.
+
+---
+
+## Finding 3
+
+The environment showed primarily read-based AWS activity.
+
+Common actions included:
+
+- DescribeAlarms
+- DescribeAddresses
+- DescribeSecurityGroups
+
+This indicates monitoring and enumeration-style behavior.
+
+---
+
+## Finding 4
+
+EC2-related activity was successfully identified through Splunk queries.
+
+This confirms visibility into infrastructure-level AWS actions.
+
+---
+
+## Finding 5
+
+A failed API action was detected:
+
+- GetInsightSelectors
+- InsightNotEnabledException
+
+This demonstrates the ability to identify errors and abnormal API behavior.
+
+---
+
+## Finding 6
+
+AWS activity was successfully attributed to identities.
+
+- Root account performed most actions
+- AWS service roles also generated activity
+
+---
+
+## Finding 7
+
+CloudTrail has visibility limitations.
+
+It does not capture:
+
+- SSH access
+- OS-level commands
+- Network scans
+
+This highlights the need for host-level monitoring in a complete security solution.
