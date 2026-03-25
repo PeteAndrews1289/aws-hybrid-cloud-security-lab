@@ -78,3 +78,28 @@ An attacker could attempt repeated login attempts or exploit vulnerabilities wit
 ## Key Takeaway
 
 This project demonstrates that cloud security is not just about restricting access, but also about ensuring sufficient visibility to detect and respond to malicious activity.
+
+
+
+# Splunk SIEM Integration
+
+## Process
+
+- Generated AWS logs using CloudTrail
+- Stored logs in S3
+- Downloaded and extracted JSON log files
+- Uploaded logs into Splunk Enterprise
+- Parsed nested CloudTrail records using `spath` and `mvexpand`
+- Built detection queries to analyze AWS activity
+
+## Result
+
+Created a working SIEM pipeline for analyzing AWS CloudTrail logs in Splunk.
+
+## Insight
+
+Splunk provides centralized visibility into AWS API activity, enabling detection of infrastructure changes, failed actions, and identity-based events.
+
+CloudTrail logs required custom parsing due to nested JSON structure, demonstrating the importance of understanding log formats during SIEM integration.
+
+CloudTrail does not capture OS-level activity, highlighting a key gap in cloud-native logging.
