@@ -1,0 +1,32 @@
+# Alerts
+
+## Process
+
+- Created scheduled alerts in Splunk to detect security-relevant AWS activity
+- Used CloudTrail logs as the primary data source
+- Built SPL queries using `spath` and `mvexpand` to parse nested records
+- Configured alerts to run periodically and trigger on matching conditions
+
+## Alerts Created
+
+### Failed AWS API Calls
+
+Detects failed AWS API requests using the `errorCode` field, which may indicate misconfigurations, permission issues, or suspicious behavior.
+
+### EC2 State Changes
+
+Detects lifecycle changes such as instance start, stop, reboot, and termination.
+
+### Security Group Changes
+
+Detects modifications to security group rules, including inbound rule additions and removals.
+
+## Result
+
+Established active detection capabilities for AWS infrastructure activity within Splunk.
+
+## Insight
+
+Alerting transforms log analysis into a proactive security workflow.
+
+CloudTrail logs combined with Splunk alerts enable rapid identification of potentially impactful or suspicious cloud activity.
