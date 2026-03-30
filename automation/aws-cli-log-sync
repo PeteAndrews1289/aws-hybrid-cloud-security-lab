@@ -1,0 +1,18 @@
+# AWS CLI Log Sync
+
+## Process
+
+- Configured AWS CLI for authenticated access to the AWS environment
+- Used `aws s3 sync` to recursively download CloudTrail logs from Amazon S3
+- Created a reusable shell script to simplify bulk log retrieval
+- Stored downloaded logs locally for Splunk ingestion and analysis
+
+## Result
+
+Automated the collection of AWS CloudTrail logs from S3 instead of manually downloading individual files.
+
+## Insight
+
+Using AWS CLI for log retrieval is more efficient and scalable than manual downloads.
+
+This adds a cloud engineering component to the project and makes the logging workflow more realistic for production-style environments.
