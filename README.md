@@ -126,3 +126,66 @@ The dashboard enables quick identification of:
 - Service activity trends over time
 
 This demonstrates how raw CloudTrail logs can be converted into meaningful security visualizations using Splunk.
+
+## SIEM Integration
+
+This project was extended by integrating Splunk Enterprise to analyze AWS CloudTrail logs.
+
+### Process
+
+- Retrieved CloudTrail logs from Amazon S3
+- Used AWS CLI to bulk download logs with `aws s3 sync`
+- Uploaded logs into Splunk Enterprise
+- Parsed nested CloudTrail records using `spath` and `mvexpand`
+- Built detections, dashboards, and alerts for AWS activity
+
+### Result
+
+Successfully created a cloud security monitoring workflow using AWS CloudTrail and Splunk.
+
+### Insight
+
+This extended the project from an AWS infrastructure lab into a cloud security monitoring pipeline.
+
+---
+
+## Dashboard and Alerts
+
+### Process
+
+- Built Splunk dashboards for AWS API activity, EC2 activity, failed API calls, and service activity over time
+- Created alerts for failed API calls, EC2 state changes, and security group changes
+
+### Result
+
+Added visual monitoring and detection capability to the cloud environment.
+
+### Insight
+
+Dashboards and alerts make AWS activity easier to interpret and move the project closer to a real cloud security workflow.
+
+---
+
+## Automation
+
+### Process
+
+- Configured AWS CLI using IAM programmatic access
+- Used `aws s3 sync` to bulk retrieve CloudTrail logs from S3
+
+### Result
+
+Improved the scalability of the log collection process.
+
+### Insight
+
+Automating log retrieval reflects a more realistic cloud engineering workflow than manual downloads.
+
+---
+
+## Key Security Insights
+
+- CloudTrail provides strong visibility into AWS API activity
+- Splunk enables centralized analysis, dashboards, and alerts
+- Change-based events such as EC2 lifecycle actions and security group modifications provide stronger security value than read-only API calls
+- CloudTrail does not capture OS-level events such as SSH sessions or shell commands
