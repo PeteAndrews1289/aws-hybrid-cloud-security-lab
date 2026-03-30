@@ -1,0 +1,57 @@
+# Network Security Analysis
+
+## Process
+
+- Reviewed the AWS VPC configuration used in the lab
+- Analyzed public and private subnet placement
+- Reviewed route tables and internet gateway usage
+- Evaluated security group rules controlling inbound and outbound access
+- Examined how traffic reaches the public EC2 instance and how private resources are isolated
+
+## Result
+
+Mapped how network traffic flows through the AWS environment and identified which components are internet-facing versus internally isolated.
+
+## Insight
+
+Networking fundamentals are critical in cloud security because exposure is determined by architecture as much as by logging.
+
+In this lab, public access was intentionally limited through security groups and subnet design, while the private subnet remained isolated from direct internet access.
+
+This reinforces that cloud security monitoring is strongest when combined with a clear understanding of routing, segmentation, and exposed services.
+
+## Architecture Interpretation
+
+### Public Subnet
+
+- Hosts internet-facing resources
+- Associated with a route table that includes a route to the internet gateway
+- Suitable for public EC2 instances that require external access
+
+### Private Subnet
+
+- Does not allow direct inbound access from the internet
+- Intended for internal resources that should remain isolated
+- Reduces exposure by separating internal infrastructure from public-facing services
+
+### Internet Gateway
+
+- Provides internet connectivity for resources in the public subnet
+- Works together with route tables to allow external traffic flow
+
+### Security Groups
+
+- Act as stateful virtual firewalls for EC2 instances
+- Control which ports and sources are allowed inbound access
+- Restrict unnecessary exposure and reduce attack surface
+
+## Security Relevance
+
+This network design demonstrates several important cloud security concepts:
+
+- segmentation between public and private resources
+- controlled exposure through security groups
+- dependence on routing and gateway configuration for internet reachability
+- the relationship between infrastructure design and monitoring visibility
+
+Security group changes are especially important because even a well-designed environment can become exposed if rules are loosened.
