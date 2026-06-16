@@ -1,191 +1,170 @@
-# aws-hybrid-cloud-security-lab
-AWS lab
+# AWS Hybrid Cloud Security Lab
 
+## Overview
 
-# Hybrid Cloud Security Lab (AWS)
+This project demonstrates a hands-on AWS security lab built to model a small hybrid-style cloud environment with segmented networking, monitored workloads, and cloud activity analysis. The lab focuses on a common security problem in cloud environments: infrastructure can be deployed with basic access controls, but defenders still need centralized visibility to understand changes, failed actions, identity activity, and exposed services.
 
-## Objective
-Design and deploy a secure AWS environment with segmented networking, monitored workloads, and simulated attack activity.
+The environment uses a custom AWS VPC with public and private subnets, EC2 instances, security groups, CloudTrail, CloudWatch, S3 log storage, and Splunk Enterprise for SIEM-style analysis. The project shows how AWS infrastructure activity can be collected, parsed, visualized, and turned into basic detections and alerts.
 
-## Architecture Overview
-- Custom VPC
+The final lab demonstrates both prevention and detection thinking: network segmentation limits exposure, CloudTrail captures AWS API activity, Splunk dashboards make activity easier to review, and the findings identify where additional logging and hardening would be needed for stronger security operations.
+
+## Key Features
+
+- Built a custom AWS VPC with public and private subnets to demonstrate network segmentation.
+- Deployed public and private EC2 instances to validate exposure boundaries.
+- Configured security groups to restrict inbound access, including SSH limited to a known public IP.
+- Enabled AWS CloudTrail to capture AWS API activity across the lab environment.
+- Used Amazon S3 as the storage location for CloudTrail log files.
+- Reviewed CloudWatch EC2 metrics to establish basic workload visibility.
+- Imported CloudTrail JSON logs into Splunk Enterprise for centralized security analysis.
+- Parsed nested CloudTrail records in Splunk using `spath` and `mvexpand`.
+- Built Splunk dashboards for AWS API activity, EC2 activity, failed API calls, and service trends over time.
+- Created alerts for failed API calls, EC2 state changes, and security group changes.
+- Used AWS CLI automation with `aws s3 sync` to bulk retrieve CloudTrail logs from S3.
+- Documented security gaps around host-level visibility, SSH exposure, and missing centralized OS logs.
+
+## Architecture
+
+The lab starts with a segmented AWS network. A public subnet hosts an internet-accessible EC2 instance for web validation, while a private subnet hosts an internal EC2 instance without direct public exposure. AWS CloudTrail records control-plane activity and stores logs in S3. Those logs are downloaded with AWS CLI and imported into Splunk Enterprise, where searches, dashboards, and alerts provide security visibility.
+
+```mermaid
+flowchart LR
+    User[User / Administrator] -->|HTTP validation| PublicEC2[Public EC2 Instance]
+    User -->|Restricted SSH| PublicEC2
+
+    subgraph AWS[AWS Lab Environment]
+        VPC[Custom VPC]
+        PublicSubnet[Public Subnet]
+        PrivateSubnet[Private Subnet]
+        PublicEC2
+        PrivateEC2[Private EC2 Instance]
+        SG[Security Groups]
+        CloudTrail[AWS CloudTrail]
+        CloudWatch[Amazon CloudWatch]
+        S3[S3 Log Bucket]
+    end
+
+    VPC --> PublicSubnet
+    VPC --> PrivateSubnet
+    PublicSubnet --> PublicEC2
+    PrivateSubnet --> PrivateEC2
+    SG --> PublicEC2
+    SG --> PrivateEC2
+    CloudTrail --> S3
+    PublicEC2 --> CloudWatch
+    PrivateEC2 --> CloudWatch
+    S3 -->|aws s3 sync| LocalLogs[Downloaded CloudTrail Logs]
+    LocalLogs --> Splunk[Splunk Enterprise]
+    Splunk --> Dashboards[Dashboards]
+    Splunk --> Alerts[Alerts]
+```
+
+## Tools & Technologies
+
+### Cloud / Infrastructure
+
+- AWS VPC
 - Public and private subnets
 - Internet Gateway
-- EC2 instances (public + private)
-- Security groups
-- CloudTrail and CloudWatch monitoring
+- Route tables
+- EC2
+- Security Groups
+- Amazon S3
 
-## Security Goals
-- Enforce network segmentation
-- Apply least privilege principles
-- Limit public exposure
-- Monitor and log activity
+### Security Tools
 
-## Planned Phases
-1. Network setup (VPC, subnets, routing)
-2. EC2 deployment
-3. Security hardening
-4. Monitoring setup
-5. Attack simulation and analysis
+- AWS CloudTrail
+- Splunk Enterprise
+- Splunk Search Processing Language (SPL)
 
+### Programming / Scripting
 
-## Evidence
-Screenshots included in this repository show:
-- VPC and subnet layout
-- route table associations
-- internet gateway attachment
-- public and private EC2 placement
-- public security group configuration
-- successful public web server validation
+- AWS CLI
+- Shell-based log retrieval workflow using `aws s3 sync`
+- JSON log parsing in Splunk
 
-## Security Design Decisions
-- Restricted SSH access to the public EC2 instance by limiting port 22 to my public IP only
-- Avoided assigning a public IP address to the internal EC2 instance
-- Used separate public and private subnets to enforce segmentation
-- Kept the private subnet isolated from direct internet routing
+### Monitoring / Logging
 
-## Validation Performed
-- Confirmed the public web server was accessible over HTTP
-- Verified that the internal server was not directly exposed to the internet
-- Confirmed security group and route table behavior matched intended design
+- Amazon CloudWatch EC2 metrics
+- CloudTrail event history
+- S3-based CloudTrail log storage
+- Splunk dashboards and alerts
 
-## Monitoring and Logging
-- Enabled AWS CloudTrail to capture API activity across the environment
-- Reviewed CloudTrail event history to observe infrastructure actions
-- Used CloudWatch to monitor EC2 metrics such as CPU and network activity
-- Established baseline system behavior prior to attack simulation
+### Automation / CI/CD
 
+- AWS CLI automation for repeatable CloudTrail log collection
+- No CI/CD pipeline was implemented in this lab
 
-## Security Gaps Identified
+## Security Concepts Demonstrated
 
-- No visibility into failed SSH login attempts
-- No host-level logging configured
-- No centralized log aggregation (SIEM)
-- SSH exposed to the internet (even if restricted)
+This project demonstrates core cloud security and security operations concepts, including network segmentation, least privilege access, cloud logging, SIEM integration, detection engineering, and security gap analysis.
 
-### Risk
+The AWS portion shows how public and private subnets, route tables, and security groups affect exposure. The monitoring portion shows how CloudTrail can capture AWS API activity, while also highlighting that CloudTrail does not provide operating system-level visibility such as SSH session details or shell commands.
 
-An attacker could attempt repeated login attempts or exploit vulnerabilities without being detected by default AWS logging services.
+The Splunk portion demonstrates practical SIEM work: ingesting raw logs, parsing nested JSON records, writing searches, building dashboards, and creating alerts around meaningful cloud activity such as failed API calls, EC2 lifecycle events, and security group changes.
 
-## Security Recommendations
+## Implementation Steps
 
-- Replace SSH with AWS Systems Manager Session Manager to eliminate public SSH exposure
-- Enable host-level logging (e.g., auth logs)
-- Integrate logs into a SIEM solution (e.g., Splunk)
-- Enable VPC Flow Logs for network visibility
-- Implement intrusion detection mechanisms for abnormal behavior
+1. Designed a segmented AWS network using a custom VPC, public subnet, private subnet, route tables, and an Internet Gateway.
+2. Deployed EC2 instances into public and private network segments to test access boundaries.
+3. Configured security groups to allow required access while limiting SSH exposure to a known public IP.
+4. Validated that the public web server was reachable over HTTP.
+5. Confirmed that the private EC2 instance was not directly exposed to the internet.
+6. Enabled CloudTrail to capture AWS API activity and store logs in S3.
+7. Reviewed CloudTrail event history and CloudWatch EC2 metrics for baseline visibility.
+8. Used AWS CLI to download CloudTrail logs from S3 with `aws s3 sync`.
+9. Uploaded CloudTrail JSON logs into Splunk Enterprise.
+10. Parsed CloudTrail records with Splunk searches using `spath` and `mvexpand`.
+11. Built dashboards for API activity, EC2 activity, failed API calls, and service trends.
+12. Created alerts for failed API calls, EC2 state changes, and security group changes.
+13. Documented monitoring gaps and recommended improvements.
 
-## Key Takeaway
+## Results / Findings
 
-This project demonstrates that cloud security is not just about restricting access, but also about ensuring sufficient visibility to detect and respond to malicious activity.
+The project produced a working cloud security monitoring workflow that connects AWS infrastructure activity to SIEM analysis in Splunk. CloudTrail logs were collected from AWS, stored in S3, retrieved with the AWS CLI, and analyzed in Splunk using custom parsing and searches.
 
+Dashboards provided visibility into common AWS API actions, infrastructure activity, failed API calls, EC2-related events, and service activity trends over time. Alerts were added for security-relevant events such as failed API calls, EC2 state changes, and security group modifications.
 
+The lab also identified important security gaps. CloudTrail provided strong visibility into AWS control-plane activity, but it did not capture host-level events such as failed SSH login attempts, SSH sessions, or shell commands. The project therefore recommends adding host-level logging, VPC Flow Logs, Session Manager, and centralized log aggregation for deeper detection coverage.
 
-# Splunk SIEM Integration
+## Screenshots
 
-## Process
+Suggested screenshots to include:
 
-- Generated AWS logs using CloudTrail
-- Stored logs in S3
-- Downloaded and extracted JSON log files
-- Uploaded logs into Splunk Enterprise
-- Parsed nested CloudTrail records using `spath` and `mvexpand`
-- Built detection queries to analyze AWS activity
+- `screenshots/vpc-subnet-layout.png`
+- `screenshots/route-table-associations.png`
+- `screenshots/security-group-rules.png`
+- `screenshots/public-web-validation.png`
+- `screenshots/cloudtrail-event-history.png`
+- `screenshots/s3-cloudtrail-logs.png`
+- `screenshots/splunk-cloudtrail-ingestion.png`
+- `screenshots/splunk-dashboard-overview.png`
+- `screenshots/failed-api-alert.png`
+- `screenshots/security-group-change-alert.png`
+- `screenshots/architecture.png`
 
-## Result
+## Challenges & Lessons Learned
 
-Created a working SIEM pipeline for analyzing AWS CloudTrail logs in Splunk.
+- CloudTrail logs contain nested JSON records, so useful Splunk analysis required custom parsing with `spath` and `mvexpand`.
+- AWS control-plane logs are valuable for identity and infrastructure monitoring, but they do not replace host-level logging.
+- A private subnet reduces direct exposure, but additional controls are still needed for monitoring east-west traffic and instance activity.
+- SSH access should be minimized even when restricted by IP; AWS Systems Manager Session Manager would reduce the need for public SSH exposure.
+- Security dashboards are most useful when they focus on meaningful events, such as failed actions and infrastructure changes, instead of only high-volume read-only API calls.
 
-## Insight
+## Relevance to Security Roles
 
-Splunk provides centralized visibility into AWS API activity, enabling detection of infrastructure changes, failed actions, and identity-based events.
+This project maps well to Security Engineer, Cloud Security Analyst, SOC Analyst, and Detection Engineer responsibilities. It shows practical experience with AWS infrastructure security, cloud logging, SIEM ingestion, dashboard creation, alert logic, and security gap analysis.
 
-CloudTrail logs required custom parsing due to nested JSON structure, demonstrating the importance of understanding log formats during SIEM integration.
+It is also relevant to DevSecOps and cloud operations roles because it demonstrates secure cloud design decisions, repeatable log retrieval with AWS CLI, and recommendations for improving visibility and reducing administrative exposure.
 
-CloudTrail does not capture OS-level activity, highlighting a key gap in cloud-native logging.
+## Future Improvements
 
-
-## Dashboard Visualization
-
-## Process
-
-- Built a Splunk dashboard to monitor AWS CloudTrail logs
-- Created visual panels for API activity, EC2 events, failed actions, and time-based trends
-
-## Result
-
-Developed a SIEM-style dashboard that provides visibility into AWS service activity and potential security events.
-
-## Insight
-
-The dashboard enables quick identification of:
-
-- Most common AWS API actions
-- Infrastructure-related activity (EC2)
-- Failed API calls
-- Service activity trends over time
-
-This demonstrates how raw CloudTrail logs can be converted into meaningful security visualizations using Splunk.
-
-## SIEM Integration
-
-This project was extended by integrating Splunk Enterprise to analyze AWS CloudTrail logs.
-
-### Process
-
-- Retrieved CloudTrail logs from Amazon S3
-- Used AWS CLI to bulk download logs with `aws s3 sync`
-- Uploaded logs into Splunk Enterprise
-- Parsed nested CloudTrail records using `spath` and `mvexpand`
-- Built detections, dashboards, and alerts for AWS activity
-
-### Result
-
-Successfully created a cloud security monitoring workflow using AWS CloudTrail and Splunk.
-
-### Insight
-
-This extended the project from an AWS infrastructure lab into a cloud security monitoring pipeline.
-
----
-
-## Dashboard and Alerts
-
-### Process
-
-- Built Splunk dashboards for AWS API activity, EC2 activity, failed API calls, and service activity over time
-- Created alerts for failed API calls, EC2 state changes, and security group changes
-
-### Result
-
-Added visual monitoring and detection capability to the cloud environment.
-
-### Insight
-
-Dashboards and alerts make AWS activity easier to interpret and move the project closer to a real cloud security workflow.
-
----
-
-## Automation
-
-### Process
-
-- Configured AWS CLI using IAM programmatic access
-- Used `aws s3 sync` to bulk retrieve CloudTrail logs from S3
-
-### Result
-
-Improved the scalability of the log collection process.
-
-### Insight
-
-Automating log retrieval reflects a more realistic cloud engineering workflow than manual downloads.
-
----
-
-## Key Security Insights
-
-- CloudTrail provides strong visibility into AWS API activity
-- Splunk enables centralized analysis, dashboards, and alerts
-- Change-based events such as EC2 lifecycle actions and security group modifications provide stronger security value than read-only API calls
-- CloudTrail does not capture OS-level events such as SSH sessions or shell commands
+- Replace direct SSH access with AWS Systems Manager Session Manager.
+- Enable VPC Flow Logs for network-level visibility.
+- Add host-level logging from EC2 instances, such as Linux authentication logs.
+- Forward logs automatically instead of manually uploading downloaded CloudTrail files.
+- Add detection query files to the repository for failed API calls, EC2 state changes, and security group modifications.
+- Add sanitized sample CloudTrail events for reviewers to understand the detection logic.
+- Include screenshots of AWS architecture, Splunk dashboards, and alert results.
+- Add an architecture diagram image under `screenshots/architecture.png`.
+- Expand the lab with IAM-specific abuse scenarios, such as suspicious access key creation or privilege escalation attempts.
