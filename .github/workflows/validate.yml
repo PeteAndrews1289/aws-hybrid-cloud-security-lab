@@ -1,0 +1,36 @@
+name: Validate portfolio artifacts
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Validate shell syntax
+        run: |
+          bash -n automation/s3-log-sync.sh
+          bash -n tests/test_s3_log_sync.sh
+
+      - name: Test log collection helper
+        run: bash tests/test_s3_log_sync.sh
+
+      - name: Reject known lab identifiers and credential patterns
+        shell: bash
+        run: |
+          pattern='AKI''A|ASI''A|aws_access_key_''id|aws_secret_access_''key|1349''43601314|96\.224\.205\.6''5|13\.59\.240\.14''1'
+          if grep -R -I -n -E \
+            "$pattern" \
+            --exclude-dir=.git .; then
+            echo "Public artifact validation failed."
+            exit 1
+          fi

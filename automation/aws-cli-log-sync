@@ -2,14 +2,20 @@
 
 ## Process
 
-- Configured AWS CLI for authenticated access to the AWS environment
-- Used `aws s3 sync` to recursively download CloudTrail logs from Amazon S3
-- Created a reusable shell script to simplify bulk log retrieval
-- Stored downloaded logs locally for Splunk ingestion and analysis
+- Configured AWS CLI for authenticated access to the isolated lab environment.
+- Used `aws s3 sync` to download compressed CloudTrail JSON from Amazon S3.
+- Parameterized the source S3 URI so account and bucket identifiers are not committed.
+- Stored downloaded logs locally for Splunk ingestion and analysis; the download directory is ignored by Git.
+
+## Usage
+
+```bash
+./automation/s3-log-sync.sh s3://YOUR-BUCKET/AWSLogs/YOUR-ACCOUNT/CloudTrail/ ./cloudtrail-logs
+```
 
 ## Result
 
-Automated the collection of AWS CloudTrail logs from S3 instead of manually downloading individual files.
+Automated batch collection of CloudTrail logs from S3 instead of downloading individual files.
 
 ## Insight
 

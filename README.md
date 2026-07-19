@@ -1,10 +1,14 @@
 # AWS Hybrid Cloud Security Lab
 
+> **Status:** Completed, evidence captured, and infrastructure dismantled. Raw account, credential, and network identifiers are intentionally withheld.
+
+![Sanitized AWS hybrid cloud evidence overview](docs/images/hybrid-cloud-evidence.svg)
+
 ## Overview
 
 This project demonstrates a hands-on AWS security lab built to model a small hybrid-style cloud environment with segmented networking, monitored workloads, and cloud activity analysis. The lab focuses on a common cloud security problem: infrastructure can be deployed with basic access controls, but defenders still need centralized visibility to understand changes, failed actions, identity activity, and exposed services.
 
-The environment uses a custom AWS VPC with public and private subnets, EC2 instances, security groups, CloudTrail, CloudWatch, S3 log storage, AWS CLI automation, and Splunk Enterprise for SIEM-style analysis. The repository includes setup notes, security analysis notes, detection queries, dashboard documentation, and AWS/Splunk screenshots that show the lab being built and validated.
+The environment used a custom AWS VPC with public and private subnets, EC2 instances, security groups, CloudTrail, CloudWatch, S3 log storage, AWS CLI automation, and Splunk Enterprise for SIEM-style analysis. The repository includes setup notes, security analysis notes, reusable detection queries, safe aggregate charts, and a candid evidence-and-limitations record.
 
 The final lab demonstrates both prevention and detection thinking: network segmentation limits exposure, CloudTrail captures AWS API activity, Splunk dashboards make activity easier to review, and the findings identify where additional logging and hardening would be needed for stronger security operations.
 
@@ -125,37 +129,21 @@ The Splunk portion demonstrates practical SIEM work: ingesting CloudTrail logs, 
 
 ## Results / Findings
 
-The project produced a working AWS infrastructure lab and a SIEM workflow for reviewing CloudTrail activity in Splunk. Screenshots show the VPC, subnets, route tables, Internet Gateway, public/private EC2 placement, public web validation, Splunk dashboard views, and alert overview.
+The project produced a time-bounded AWS infrastructure lab and a batch SIEM workflow for reviewing CloudTrail activity in Splunk. The retained sample contains 40 CloudTrail management events and supports the implementation claims in this repository; it is not large enough for statistical conclusions.
 
-Splunk analysis showed common AWS API activity such as `DescribeAlarms`, `DescribeAddresses`, `DescribeSecurityGroups`, and `GetBucketLogging`. It also identified failed API behavior, including `GetInsightSelectors` returning `InsightNotEnabledException`, which demonstrated how configuration errors or failed actions can be surfaced through SIEM searches.
+Splunk analysis showed common AWS API activity such as `DescribeAlarms`, `DescribeAddresses`, `DescribeSecurityGroups`, and `GetBucketLogging`. It also surfaced `GetInsightSelectors` returning `InsightNotEnabledException`, demonstrating a basic search for configuration errors or failed actions.
 
 The lab also identified important visibility gaps. CloudTrail provided strong AWS control-plane visibility, but it did not capture SSH login attempts, OS-level commands, or network scan details. The project therefore recommends adding host-level logs, VPC Flow Logs, Systems Manager Session Manager, and centralized endpoint telemetry.
 
-## Screenshots
+## Evidence
 
-Existing screenshots in this repository:
+- [`docs/evidence-and-limitations.md`](docs/evidence-and-limitations.md) separates observation, interpretation, and scope limits.
+- [`siem-project/detection-queries.md`](siem-project/detection-queries.md) contains the reusable SPL.
+- [`siem-project/siem/splunk-dashboards.png`](siem-project/siem/splunk-dashboards.png) shows the aggregate dashboard.
+- [`siem-project/siem/alerts-overview.png`](siem-project/siem/alerts-overview.png) shows the three scheduled alert concepts.
+- [`automation/s3-log-sync.sh`](automation/s3-log-sync.sh) is a runnable, parameterized batch collection helper.
 
-- `screenshots/aws/vpc-overview.png`
-- `screenshots/aws/subnets.png`
-- `screenshots/aws/route-tables.png`
-- `screenshots/aws/internet-gateway.png`
-- `screenshots/aws/public-instance-overview.png`
-- `screenshots/aws/private-instance-overview.png`
-- `screenshots/aws/public-web-sg.png`
-- `screenshots/aws/web-server-page.png`
-- `screenshots/aws/nmap-scan.png`
-- `siem-project/siem/splunk-dashboards.png`
-- `siem-project/siem/alerts-overview.png`
-- `siem-project/siem/ec2-activity.png`
-- `siem-project/siem/failed-actions.png`
-- `siem-project/siem/activity-timechart.png`
-
-Suggested additional screenshots:
-
-- `screenshots/architecture.png`
-- `screenshots/aws/cloudtrail-event-history.png`
-- `screenshots/aws/s3-cloudtrail-logs.png`
-- `screenshots/splunk/log-ingestion.png`
+Legacy console and raw-event screenshots were removed from the current branch because they exposed expired credential identifiers, account identifiers, and public network details. Git history remains recoverable for repository owners, but the portfolio view now follows safer disclosure practice.
 
 ## Challenges & Lessons Learned
 
@@ -181,3 +169,4 @@ It is also relevant to DevSecOps and cloud operations roles because it demonstra
 - Add sanitized CloudTrail sample logs.
 - Add Terraform or CloudFormation to recreate the environment.
 - Expand the lab with IAM abuse scenarios and privilege escalation detections.
+- Add a synthetic CloudTrail fixture and automated SPL result validation.
