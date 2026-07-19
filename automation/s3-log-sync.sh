@@ -1,18 +1,33 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2868
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+#!/usr/bin/env bash
 
-\f0\fs24 \cf0 #!/bin/bash\
-\
-BUCKET="aws-cloudtrail-logs-134943601314-729bfcde"\
-PREFIX="AWSLogs/134943601314/CloudTrail/"\
-DEST="./cloudtrail-logs"\
-\
-mkdir -p "$DEST"\
-\
-aws s3 sync "s3://$BUCKET/$PREFIX" "$DEST"\
-\
-echo "CloudTrail logs synced to $DEST"}
+set -euo pipefail
+
+usage() {
+  echo "Usage: $0 s3://BUCKET/PREFIX [DESTINATION]" >&2
+}
+
+if [[ $# -lt 1 || $# -gt 2 ]]; then
+  usage
+  exit 64
+fi
+
+if ! command -v aws >/dev/null 2>&1; then
+  echo "Error: the AWS CLI is required." >&2
+  exit 69
+fi
+
+source_uri="$1"
+destination="${2:-./cloudtrail-logs}"
+
+if [[ "$source_uri" != s3://* ]]; then
+  echo "Error: source must be an s3:// URI." >&2
+  exit 64
+fi
+
+mkdir -p -- "$destination"
+
+aws s3 sync "$source_uri" "$destination" \
+  --exclude "*" \
+  --include "*.json.gz"
+
+echo "CloudTrail logs synced to $destination"
